@@ -34,11 +34,11 @@ export default class StateNode extends GraphNode {
   }
 
   get thumbnail(): string {
-    return super.getAttr('description', '');
+    return super.getAttr('thumbnail', '');
   }
 
   set thumbnail(value: string) {
-    super.setAttr('description', value);
+    super.setAttr('thumbnail', value);
   }
 
   static restore(p: any) {
