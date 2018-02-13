@@ -10,10 +10,11 @@ import ObjectNode from './ObjectNode';
  * In addition, a state is characterized by the set of active object nodes
  */
 export default class StateNode extends GraphNode {
-  constructor(name: string, description = '') {
+  constructor(name: string, description = '', thumbnail = '') {
     super('state');
     super.setAttr('name', name);
     super.setAttr('description', description);
+    super.setAttr('thumbnail', thumbnail);
   }
 
   get name(): string {
@@ -29,6 +30,14 @@ export default class StateNode extends GraphNode {
   }
 
   set description(value: string) {
+    super.setAttr('description', value);
+  }
+
+  get thumbnail(): string {
+    return super.getAttr('description', '');
+  }
+
+  set thumbnail(value: string) {
     super.setAttr('description', value);
   }
 
