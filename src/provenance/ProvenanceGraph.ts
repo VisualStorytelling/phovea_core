@@ -94,15 +94,20 @@ async function createCompressor(path: ActionNode[]) {
  * @param path
  */
 export async function compress(path: ActionNode[]) {
+  if (path.length <= 1) {
+    return path; //can't compress single one
+  }
   //return Promise.resolve(path);
   //TODO find a strategy how to compress but also invert skipped actions
   const compressor = await createCompressor(path);
   //return path;
+  //console.log('before', path.map((path) => path.toString()));
   let before: number;
   do {
     before = path.length;
     path = compressor(path);
   } while (before > path.length);
+  //console.log('after', path.map((path) => path.toString()));
   return path;
 }
 
@@ -151,16 +156,21 @@ function createNoop() {
 
 function createLazyCmdFunctionFactory(): ICmdFunctionFactory {
   const facts = listPlugins('actionFactory');
+  const singles = listPlugins('actionFunction');
 
   function resolveFun(id: string) {
     if (id === 'noop') {
       return Promise.resolve(noop);
     }
-    const factory = facts.filter((f: any) => id.match(f.creates) != null)[0];
-    if (factory == null) {
-      return Promise.reject('no factory found for ' + id);
+    const single = singles.find((f) => f.id === id);
+    if (single) {
+      return single.load().then((f) => f.factory);
     }
-    return factory.load().then((f) => f.factory(id));
+    const factory = facts.find((f: any) => id.match(f.creates) != null);
+    if (factory) {
+      return factory.load().then((f) => f.factory(id));
+    }
+    return Promise.reject('no factory found for ' + id);
   }
 
   const lazyFunction = (id: string) => {
@@ -214,6 +224,8 @@ export interface IProvenanceGraphManager {
   get(desc: IProvenanceGraphDataDescription): Promise<ProvenanceGraph>;
   create(): Promise<ProvenanceGraph>;
 
+  edit(graph: IProvenanceGraphDataDescription|ProvenanceGraph, desc: any): Promise<IProvenanceGraphDataDescription>;
+
   delete(desc: IProvenanceGraphDataDescription): Promise<boolean>;
 
   import(json: any): Promise<ProvenanceGraph>;
@@ -224,6 +236,7 @@ function findMetaObject<T>(find: IObjectRef<T>) {
 }
 
 export default class ProvenanceGraph extends ADataType<IProvenanceGraphDataDescription> {
+  private static readonly PROPAGATED_EVENTS = ['sync', 'add_edge', 'add_node', 'sync_node', 'sync_edge', 'sync_start'];
   private _actions: ActionNode[] = [];
   private _objects: ObjectNode<any>[] = [];
   private _states: StateNode[] = [];
@@ -239,7 +252,7 @@ export default class ProvenanceGraph extends ADataType<IProvenanceGraphDataDescr
 
   constructor(desc: IProvenanceGraphDataDescription, public backend: GraphBase) {
     super(desc);
-    this.propagate(this.backend, 'sync', 'add_edge', 'add_node', 'sync_node', 'sync_edge', 'sync_start');
+    this.propagate(this.backend, ...ProvenanceGraph.PROPAGATED_EVENTS);
 
     if (this.backend.nnodes === 0) {
       this.act = new StateNode('Start');
@@ -253,6 +266,15 @@ export default class ProvenanceGraph extends ADataType<IProvenanceGraphDataDescr
       this._slides = <any>this.backend.nodes.filter((n) => (n instanceof SlideNode));
       this.act = <StateNode>(act >= 0 ? this.getStateById(act) : this._states[0]);
     }
+  }
+
+  migrateBackend(backend: GraphBase) {
+    //asserts that the old backend and the new one have the same nodes inside of them
+    this.stopPropagation(this.backend, ...ProvenanceGraph.PROPAGATED_EVENTS);
+    this.backend = backend;
+    this.propagate(this.backend, ...ProvenanceGraph.PROPAGATED_EVENTS);
+    //hack to update the description object
+    (<any>this).desc = <IProvenanceGraphDataDescription>backend.desc;
   }
 
   get isEmpty() {
