@@ -108,7 +108,7 @@ export class TableView extends ATable implements ITable {
   }
 
   col(i: number) {
-    return this.vectors[i];
+    return this.vectors[i] as any;
   }
 
   cols(range: RangeLike = all()) {
@@ -120,7 +120,7 @@ export class TableView extends ATable implements ITable {
   }
 
   colData<T>(column: string, range: RangeLike = all()) {
-    return this.dataOfColumn(column, range);
+    return this.dataOfColumn(column, range) as any;
   }
 
   dataOfColumn<T>(column: string, range: RangeLike = all()) {

@@ -47,7 +47,7 @@ export default class StratificationVector extends ADataType<IStratificationDataD
   }
 
   group(group: number): IStratification {
-    return new StratificationGroup(this, group, this.groups[group]);
+    return new StratificationGroup(this as any, group, this.groups[group]);
   }
 
   async hist(bins?: number, range: RangeLike = all()): Promise<IHistogram> {
@@ -56,11 +56,11 @@ export default class StratificationVector extends ADataType<IStratificationDataD
   }
 
   vector() {
-    return this.asVector();
+    return this.asVector() as any;
   }
 
   asVector() {
-    return Promise.resolve(this.v);
+    return Promise.resolve(this.v) as any;
   }
 
   origin(): Promise<IDataType> {
@@ -73,7 +73,7 @@ export default class StratificationVector extends ADataType<IStratificationDataD
 
   async idRange() {
     const ids = await this.ids();
-    return ids.dim(0).preMultiply(this.r, this.dim[0]);
+    return ids.dim(0).preMultiply(this.r, this.dim[0]) as any;
   }
 
   names(range: RangeLike = all()) {

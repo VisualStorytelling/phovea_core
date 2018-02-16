@@ -20,7 +20,7 @@ export default class TableVector<T,D extends IValueTypeDesc> extends AVector<T,D
   constructor(private table: ITable, private index: number, desc: ITableColumn<D>) {
     super(null);
     this.column = desc.column;
-    this.root = this;
+    this.root = this as any;
     this.desc = {
       type: 'vector',
       id: table.desc.id + '_' + desc.name,
@@ -55,7 +55,7 @@ export default class TableVector<T,D extends IValueTypeDesc> extends AVector<T,D
   }
 
   restore(persisted: any) {
-    let r: IVector<T,D> = this;
+    let r: IVector<T,D> = this as any;
     if (persisted && persisted.range) { //some view onto it
       r = r.view(parse(persisted.range));
     }
@@ -72,7 +72,7 @@ export default class TableVector<T,D extends IValueTypeDesc> extends AVector<T,D
   }
 
   data(range: RangeLike = all()) {
-    return this.table.colData(this.column, range);
+    return this.table.colData(this.column, range) as any;
   }
 
   names(range: RangeLike = all()) {

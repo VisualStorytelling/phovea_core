@@ -19,14 +19,14 @@ export default class VectorTable extends ATable implements ITable {
 
   constructor(desc: IDataDescription, private vectors: IAnyVector[]) {
     super(null);
-    this.root = this;
+    this.root = this as any;
     const ref = vectors[0].desc;
     // generate the description extras
     const d = <any>desc;
     d.idtype = ref.idtype;
     d.size = [vectors[0].length, vectors.length];
     d.columns = vectors.map((v) => {
-      v.desc.column = v.desc.column || v.desc.name;
+      (v.desc as any).column = v.desc.column || v.desc.name;
       return v.desc;
     });
     this.desc = d;
@@ -38,7 +38,7 @@ export default class VectorTable extends ATable implements ITable {
   }
 
   col(i: number) {
-    return this.vectors[i];
+    return this.vectors[i] as any;
   }
 
   cols(range: RangeLike = all()) {

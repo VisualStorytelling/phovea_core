@@ -57,7 +57,7 @@ export default class RemoteStorageProvenanceGraphManager implements IProvenanceG
       nodes: json.nodes,
       edges: json.edges
     }, desc);
-    return upload(pdesc).then((base: GraphProxy) => base.impl(provenanceGraphFactory()));
+    return upload(pdesc).then((base: GraphProxy) => base.impl(provenanceGraphFactory()) as any);
   }
 
   import(json: any, desc: any = {}): Promise<ProvenanceGraph> {

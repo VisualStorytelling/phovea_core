@@ -115,7 +115,7 @@ export abstract class AVector<T,D extends IValueTypeDesc> extends SelectAble {
   }
 
   async asStratification(): Promise<IStratification> {
-    return new StratificationVector(this.root, await this.groups());
+    return new StratificationVector(this.root, await this.groups()) as any;
   }
 
   async hist(bins?: number, range: RangeLike = all()): Promise<IHistogram> {

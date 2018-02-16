@@ -24,7 +24,7 @@ export abstract class ANameVector<T extends IDataType> extends AVector<string, I
       value: {
         type: 'string'
       },
-      idtype: this.idtype.id,
+      idtype: undefined,
       size: this.length,
       ts: base.desc.ts,
       creator: base.desc.creator,

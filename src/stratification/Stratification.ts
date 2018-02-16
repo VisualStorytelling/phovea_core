@@ -72,7 +72,7 @@ export default class Stratification extends ADataType<IStratificationDataDescrip
     const data = await this.loader(this.desc);
     const ids = data.rowIds.dim(0);
     const range = data.range;
-    return ids.preMultiply(range, this.dim[0]);
+    return ids.preMultiply(range, this.dim[0]) as any;
   }
 
   async names(range: RangeLike = all()) {

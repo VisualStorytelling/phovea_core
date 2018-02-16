@@ -215,7 +215,7 @@ export default class MultiFormGrid extends AVisInstance implements IVisInstance,
     };
   }
 
-  restore(persisted: any): Promise<MultiFormGrid> {
+  restore(persisted: any): Promise<this> {
     const that = this;
     if (persisted.id) {
       const selected = this.visses.find((e) => e.id === persisted.id);
@@ -223,7 +223,7 @@ export default class MultiFormGrid extends AVisInstance implements IVisInstance,
         return this.switchTo(selected).then((vis) => {
           //FIXME
           if (vis && persisted.content && typeof((<any>vis).restore) === 'function') {
-            return <Promise<MultiFormGrid>>Promise.resolve((<any>vis).restore(persisted.content)).then(() => that);
+            return <Promise<this>>Promise.resolve((<any>vis).restore(persisted.content)).then(() => that);
           }
           return Promise.resolve(that);
         });

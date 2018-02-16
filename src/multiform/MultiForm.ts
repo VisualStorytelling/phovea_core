@@ -85,7 +85,7 @@ export default class MultiForm extends AVisInstance implements IVisInstance, IMu
     };
   }
 
-  async restore(persisted: any): Promise<MultiForm> {
+  async restore(persisted: any): Promise<this> {
     const that = this;
     if (persisted.id) {
       const selected = this.visses.find((e) => e.id === persisted.id);

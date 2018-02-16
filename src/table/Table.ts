@@ -28,7 +28,7 @@ export default class Table extends ATable implements ITable {
     super(null);
     // set default column
     desc.columns.forEach((col) => col.column = col.column || col.name);
-    this.root = this;
+    this.root = this as any;
     this.vectors = desc.columns.map((cdesc, i) => new TableVector(this, i, cdesc));
   }
 
@@ -41,7 +41,7 @@ export default class Table extends ATable implements ITable {
   }
 
   col(i: number) {
-    return this.vectors[i];
+    return this.vectors[i] as any;
   }
 
   cols(range: RangeLike = all()) {
